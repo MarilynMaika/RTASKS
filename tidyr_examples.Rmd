@@ -1,0 +1,98 @@
+
+---
+title: "Using tidyr in R"
+author: "Ana Jane"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Introduction
+The `tidyr` package is a part of the `tidyverse` and is used to make data tidy, which means data should be structured in a way that each variable is a column, each observation is a row, and each value is a cell. This R Markdown document provides an overview of some key functions in the `tidyr` package.
+
+# Load Libraries
+```{r setup, include=TRUE}
+library(tidyr)
+library(dplyr)
+```
+
+# Sample Dataset
+We will use a small dataset for demonstration purposes:
+```{r}
+data <- data.frame(
+  ID = 1:6,
+  Name = c("Alice", "Bob", "Charlie", "Diana", "Eve", "Frank"),
+  Math = c(78, 85, 90, 88, 76, 92),
+  Science = c(82, 89, 88, 91, 84, 95),
+  History = c(70, 75, 80, 85, 72, 90)
+)
+data
+```
+
+# Pivoting Data
+## Pivoting from Wide to Long Format
+The `pivot_longer()` function transforms the dataset from wide to long format:
+```{r}
+long_data <- data %>% pivot_longer(
+  cols = c(Math, Science, History),
+  names_to = "Subject",
+  values_to = "Score"
+)
+long_data
+```
+
+## Pivoting from Long to Wide Format
+The `pivot_wider()` function reverses the process, transforming the dataset back to wide format:
+```{r}
+wide_data <- long_data %>% pivot_wider(
+  names_from = Subject,
+  values_from = Score
+)
+wide_data
+```
+
+# Handling Missing Data
+## Creating a Dataset with Missing Values
+```{r}
+data_with_na <- data.frame(
+  ID = 1:6,
+  Name = c("Alice", "Bob", "Charlie", "Diana", "Eve", "Frank"),
+  Math = c(78, 85, NA, 88, 76, NA),
+  Science = c(82, NA, 88, 91, NA, 95)
+)
+data_with_na
+```
+
+## Filling Missing Values
+The `fill()` function is used to fill missing values in a dataset:
+```{r}
+filled_data <- data_with_na %>% fill(Math, .direction = "down")
+filled_data
+```
+
+## Replacing Missing Values
+The `replace_na()` function allows us to replace missing values with specific values:
+```{r}
+replaced_data <- data_with_na %>% replace_na(list(Math = 0, Science = 0))
+replaced_data
+```
+
+# Separating and Uniting Columns
+## Separating Columns
+The `separate()` function splits a column into multiple columns based on a delimiter:
+```{r}
+separate_data <- data.frame(
+  ID = 1:4,
+  FullName = c("Alice Johnson", "Bob Smith", "Charlie Brown", "Diana Prince")
+) %>% separate(FullName, into = c("FirstName", "LastName"), sep = " ")
+separate_data
+```
+
+## Uniting Columns
+The `unite()` function combines multiple columns into one:
+```{r}
+united_data <- separate_data %>% unite("FullName", FirstName, LastName, sep = " ")
+united_data
+```
+
+# Conclusion
+The `tidyr` package is essential for data wrangling tasks in R. It provides a variety of tools for reshaping and cleaning data, making it easier to analyze and visualize.
